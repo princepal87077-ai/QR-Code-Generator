@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full transform transition-all duration-300 hover:scale-105">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Generate Your QR Code</h1>
+            <p class="text-gray-500 mb-6">Enter any text or a URL below to create a scannable QR code.</p>
+        </div>
+
+        <div class="space-y-4">
+            <input type="text" id="qrText" placeholder="e.g., https://example.com or 'Hello, world!'" class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow duration-300">
+            <button id="generateBtn" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-300 transform hover:scale-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Generate QR Code
+            </button>
+        </div>
+
+        <div id="qrcode" class="mt-8 flex justify-center">
+        </div>
+
+        <div id="messageBox" class="hidden mt-4 text-center p-3 rounded-lg transition-all duration-300"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <script>
+        const qrText = document.getElementById('qrText');
+        const generateBtn = document.getElementById('generateBtn');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const messageBox = document.getElementById('messageBox');
+
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-green-100', 'text-green-800');
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-800');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'text-green-800');
+            }
+        }
+
+        function generateQRCode() {
+            const text = qrText.value.trim();
+
+            showMessage('', '');
+            qrcodeContainer.innerHTML = '';
+
+            if (text === '') {
+                showMessage('Please enter some text or a URL.', 'error');
+                return;
+            }
+
+            try {
+                new QRCode(qrcodeContainer, {
+                    text: text,
+                    width: 256,
+                    height: 256,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                showMessage('QR Code generated successfully!', 'success');
+            } catch (error) {
+                showMessage('An error occurred during QR code generation. Please try again.', 'error');
+                console.error('QR code generation error:', error);
+            }
+        }
+       
+        generateBtn.addEventListener('click', generateQRCode);
+
+        qrText.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                generateQRCode();
+            }
+        });
+    </script>
+</body>
+</html>
